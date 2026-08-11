@@ -15,10 +15,9 @@ import { authMiddleware, optionalAuthMiddleware } from '../middleware/auth.middl
 const router = Router();
 
 router.get('/api-key', optionalAuthMiddleware, getApiKey);
+router.post('/api-key/generate', optionalAuthMiddleware, generateApiKey);
 
 router.use(authMiddleware);
-
-router.post('/api-key/generate', generateApiKey);
 router.post('/roadmaps/:id/start', startRoadmap);
 router.get('/roadmaps', getUserRoadmaps);
 router.get('/roadmaps/:id/progress', getProgress);

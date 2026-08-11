@@ -143,10 +143,15 @@ export async function getApiKey(req: AuthRequest, res: Response): Promise<void> 
     const { env } = await import('../config/env');
     const crypto = await import('crypto');
 
-    const userId = req.user!.id;
+    const userId = req.user?.id;
+    if (!userId) {
+      res.json({ success: true, apiKey: env.roadmapApiKey });
+      return;
+    }
+
     const user = await User.findById(userId);
     if (!user) {
-      res.status(404).json({ success: false, message: 'User not found' });
+      res.json({ success: true, apiKey: env.roadmapApiKey });
       return;
     }
 

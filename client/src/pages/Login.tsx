@@ -62,7 +62,7 @@ export const Login: React.FC = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@roadmap.ai"
+                placeholder="you@example.com"
                 className="w-full rounded-xl border border-slate-800 bg-slate-950 py-2.5 pl-9 pr-4 text-sm text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
             </div>
@@ -98,12 +98,6 @@ export const Login: React.FC = () => {
             )}
           </button>
         </form>
-
-        <div className="mt-6 rounded-lg bg-slate-950 p-3 text-center text-xs text-slate-400">
-          <p className="font-semibold text-indigo-400">Default Admin Credentials:</p>
-          <p>Email: <code className="text-slate-200">admin@roadmap.ai</code></p>
-          <p>Password: <code className="text-slate-200">Admin@2026</code></p>
-        </div>
       </div>
     </div>
   );

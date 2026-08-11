@@ -1,7 +1,10 @@
+import crypto from 'crypto';
 import { Response } from 'express';
 import { AuthRequest } from '../middleware/auth.middleware';
 import { UserRoadmapProgress } from '../models/UserRoadmapProgress.model';
 import { Roadmap } from '../models/Roadmap.model';
+import { User } from '../models/User.model';
+import { env } from '../config/env';
 
 export async function startRoadmap(req: AuthRequest, res: Response): Promise<void> {
   try {
@@ -139,10 +142,6 @@ export async function getRecommendation(req: AuthRequest, res: Response): Promis
 
 export async function getApiKey(req: AuthRequest, res: Response): Promise<void> {
   try {
-    const { User } = await import('../models/User.model');
-    const { env } = await import('../config/env');
-    const crypto = await import('crypto');
-
     const userId = req.user?.id;
     const userEmail = req.user?.email;
 
@@ -167,15 +166,13 @@ export async function getApiKey(req: AuthRequest, res: Response): Promise<void> 
 
     res.json({ success: true, apiKey: user.apiKey });
   } catch (err: any) {
+    console.error('[getApiKey Error]', err);
     res.status(500).json({ success: false, message: err.message });
   }
 }
 
 export async function generateApiKey(req: AuthRequest, res: Response): Promise<void> {
   try {
-    const { User } = await import('../models/User.model');
-    const crypto = await import('crypto');
-
     const userId = req.user?.id;
     const userEmail = req.user?.email;
 
@@ -201,6 +198,7 @@ export async function generateApiKey(req: AuthRequest, res: Response): Promise<v
 
     res.json({ success: true, apiKey: user.apiKey });
   } catch (err: any) {
+    console.error('[generateApiKey Error]', err);
     res.status(500).json({ success: false, message: err.message });
   }
 }

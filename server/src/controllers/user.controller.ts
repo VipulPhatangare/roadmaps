@@ -153,23 +153,14 @@ export async function getApiKey(req: AuthRequest, res: Response): Promise<void> 
       user = await User.findOne({ role: 'ADMIN' });
     }
 
-    if (!user) {
-      res.json({ success: true, apiKey: env.roadmapApiKey });
+    // Return stored user API key if available
+    if (user && user.apiKey) {
+      res.json({ success: true, apiKey: user.apiKey });
       return;
     }
 
-    if (!user.apiKey) {
-      const hex = crypto.randomBytes(16).toString('hex');
-      const newKey = `roadmap_key_${hex}`;
-      try {
-        await User.updateOne({ _id: user._id }, { $set: { apiKey: newKey } });
-        user.apiKey = newKey;
-      } catch (saveErr) {
-        console.error('[getApiKey] Could not save key to user:', saveErr);
-      }
-    }
-
-    res.json({ success: true, apiKey: user.apiKey || env.roadmapApiKey });
+    // Otherwise return default environment API key (STABLE & CONSTANT across refreshes)
+    res.json({ success: true, apiKey: env.roadmapApiKey });
   } catch (err: any) {
     console.error('[getApiKey Error]', err);
     res.json({ success: true, apiKey: env.roadmapApiKey });
@@ -196,17 +187,12 @@ export async function generateApiKey(req: AuthRequest, res: Response): Promise<v
     const newKey = `roadmap_key_${hex}`;
 
     if (user) {
-      try {
-        await User.updateOne({ _id: user._id }, { $set: { apiKey: newKey } });
-      } catch (err) {
-        console.error('[generateApiKey] updateOne error:', err);
-      }
+      await User.updateOne({ _id: user._id }, { $set: { apiKey: newKey } });
     }
 
     res.json({ success: true, apiKey: newKey });
   } catch (err: any) {
     console.error('[generateApiKey Error]', err);
-    const hex = crypto.randomBytes(16).toString('hex');
-    res.json({ success: true, apiKey: `roadmap_key_${hex}` });
+    res.status(500).json({ success: false, message: 'Failed to generate new API Key.' });
   }
 }

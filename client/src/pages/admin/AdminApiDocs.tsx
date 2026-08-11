@@ -171,6 +171,11 @@ const SAMPLE_DETAIL_OUTPUT = {
 };
 
 export const AdminApiDocs: React.FC = () => {
+  const apiBaseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://roadmaps.engimind.cloud';
+  const apiHost = typeof window !== 'undefined' ? window.location.host : 'roadmaps.engimind.cloud';
+  const apiProtocol = typeof window !== 'undefined' ? window.location.protocol.replace(':', '') : 'https';
+  const [hostname, portNumber] = apiHost.split(':');
+
   const [apiKey, setApiKey] = useState('default_secret_api_key_2026');
   const [showKey, setShowKey] = useState(false);
   const [copiedKey, setCopiedKey] = useState(false);
@@ -240,10 +245,10 @@ export const AdminApiDocs: React.FC = () => {
             method: "GET",
             header: [{ key: "x-api-key", value: apiKey, type: "text" }],
             url: {
-              raw: "http://localhost:4001/api/v1/external/roadmaps",
-              protocol: "http",
-              host: ["localhost"],
-              port: "4001",
+              raw: `${apiBaseUrl}/api/v1/external/roadmaps`,
+              protocol: apiProtocol,
+              host: [hostname],
+              port: portNumber || (apiProtocol === 'https' ? '443' : '80'),
               path: ["api", "v1", "external", "roadmaps"]
             }
           }
@@ -254,10 +259,10 @@ export const AdminApiDocs: React.FC = () => {
             method: "GET",
             header: [{ key: "x-api-key", value: apiKey, type: "text" }],
             url: {
-              raw: "http://localhost:4001/api/v1/external/roadmaps/:id",
-              protocol: "http",
-              host: ["localhost"],
-              port: "4001",
+              raw: `${apiBaseUrl}/api/v1/external/roadmaps/:id`,
+              protocol: apiProtocol,
+              host: [hostname],
+              port: portNumber || (apiProtocol === 'https' ? '443' : '80'),
               path: ["api", "v1", "external", "roadmaps", ":id"]
             }
           }
@@ -280,7 +285,7 @@ export const AdminApiDocs: React.FC = () => {
     setBasicLoading(true);
     setBasicResult(null);
     try {
-      const res = await axios.get('http://localhost:4001/api/v1/external/roadmaps', {
+      const res = await axios.get(`${apiBaseUrl}/api/v1/external/roadmaps`, {
         headers: { 'x-api-key': apiKey },
       });
       setBasicResult(res.data);
@@ -296,7 +301,7 @@ export const AdminApiDocs: React.FC = () => {
     setDetailLoading(true);
     setDetailResult(null);
     try {
-      const res = await axios.get(`http://localhost:4001/api/v1/external/roadmaps/${encodeURIComponent(roadmapIdInput.trim())}`, {
+      const res = await axios.get(`${apiBaseUrl}/api/v1/external/roadmaps/${encodeURIComponent(roadmapIdInput.trim())}`, {
         headers: { 'x-api-key': apiKey },
       });
       setDetailResult(res.data);
@@ -474,7 +479,7 @@ export const AdminApiDocs: React.FC = () => {
           </div>
 
           <div
-            onClick={() => copyToClipboard(`http://localhost:4001/api/v1/external/roadmaps?apiKey=${apiKey}`, 'Query URL')}
+            onClick={() => copyToClipboard(`${apiBaseUrl}/api/v1/external/roadmaps?apiKey=${apiKey}`, 'Query URL')}
             className="group cursor-pointer rounded-xl border border-slate-800 bg-slate-900/60 p-3 hover:border-indigo-500/50 transition"
           >
             <div className="flex items-center justify-between text-indigo-400 font-semibold mb-1">
@@ -544,7 +549,7 @@ export const AdminApiDocs: React.FC = () => {
                 <div className="flex items-center justify-between text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
                   <span>cURL Command</span>
                   <button
-                    onClick={() => copyToClipboard(`curl -X GET "http://localhost:4001/api/v1/external/roadmaps" -H "x-api-key: ${apiKey}"`, 'cURL Command')}
+                    onClick={() => copyToClipboard(`curl -X GET "${apiBaseUrl}/api/v1/external/roadmaps" -H "x-api-key: ${apiKey}"`, 'cURL Command')}
                     className="flex items-center gap-1 text-indigo-400 hover:text-white"
                   >
                     <Copy className="h-3 w-3" /> Copy cURL
@@ -552,7 +557,7 @@ export const AdminApiDocs: React.FC = () => {
                 </div>
                 <div className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 p-3">
                   <code className="font-mono text-xs text-amber-300">
-                    curl -X GET "http://localhost:4001/api/v1/external/roadmaps" -H "x-api-key: {apiKey}"
+                    curl -X GET "{apiBaseUrl}/api/v1/external/roadmaps" -H "x-api-key: {apiKey}"
                   </code>
                 </div>
               </div>
@@ -561,14 +566,14 @@ export const AdminApiDocs: React.FC = () => {
                 <div className="flex items-center justify-between text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
                   <span>JavaScript (Fetch)</span>
                   <button
-                    onClick={() => copyToClipboard(`const response = await fetch("http://localhost:4001/api/v1/external/roadmaps", {\n  headers: { "x-api-key": "${apiKey}" }\n});\nconst data = await response.json();`, 'JavaScript Code')}
+                    onClick={() => copyToClipboard(`const response = await fetch("${apiBaseUrl}/api/v1/external/roadmaps", {\n  headers: { "x-api-key": "${apiKey}" }\n});\nconst data = await response.json();`, 'JavaScript Code')}
                     className="flex items-center gap-1 text-indigo-400 hover:text-white"
                   >
                     <Copy className="h-3 w-3" /> Copy JS Code
                   </button>
                 </div>
                 <pre className="rounded-xl border border-slate-800 bg-slate-950 p-4 font-mono text-xs text-indigo-300 overflow-x-auto">
-{`const response = await fetch("http://localhost:4001/api/v1/external/roadmaps", {
+{`const response = await fetch("${apiBaseUrl}/api/v1/external/roadmaps", {
   headers: {
     "x-api-key": "${apiKey}"
   }
@@ -668,7 +673,7 @@ console.log(data.roadmaps);`}
                 <div className="flex items-center justify-between text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
                   <span>cURL Command</span>
                   <button
-                    onClick={() => copyToClipboard(`curl -X GET "http://localhost:4001/api/v1/external/roadmaps/${roadmapIdInput || ':id'}" -H "x-api-key: ${apiKey}"`, 'cURL Command')}
+                    onClick={() => copyToClipboard(`curl -X GET "${apiBaseUrl}/api/v1/external/roadmaps/${roadmapIdInput || ':id'}" -H "x-api-key: ${apiKey}"`, 'cURL Command')}
                     className="flex items-center gap-1 text-indigo-400 hover:text-white"
                   >
                     <Copy className="h-3 w-3" /> Copy cURL
@@ -676,7 +681,7 @@ console.log(data.roadmaps);`}
                 </div>
                 <div className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 p-3">
                   <code className="font-mono text-xs text-amber-300">
-                    curl -X GET "http://localhost:4001/api/v1/external/roadmaps/{roadmapIdInput || ':id'}" -H "x-api-key: {apiKey}"
+                    curl -X GET "{apiBaseUrl}/api/v1/external/roadmaps/{roadmapIdInput || ':id'}" -H "x-api-key: {apiKey}"
                   </code>
                 </div>
               </div>
@@ -685,7 +690,7 @@ console.log(data.roadmaps);`}
                 <div className="flex items-center justify-between text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
                   <span>Python (requests)</span>
                   <button
-                    onClick={() => copyToClipboard(`import requests\nurl = "http://localhost:4001/api/v1/external/roadmaps/${roadmapIdInput || 'ID'}"\nheaders = {"x-api-key": "${apiKey}"}\nres = requests.get(url, headers=headers)`, 'Python Code')}
+                    onClick={() => copyToClipboard(`import requests\nurl = "${apiBaseUrl}/api/v1/external/roadmaps/${roadmapIdInput || 'ID'}"\nheaders = {"x-api-key": "${apiKey}"}\nres = requests.get(url, headers=headers)`, 'Python Code')}
                     className="flex items-center gap-1 text-indigo-400 hover:text-white"
                   >
                     <Copy className="h-3 w-3" /> Copy Python Code
@@ -694,7 +699,7 @@ console.log(data.roadmaps);`}
                 <pre className="rounded-xl border border-slate-800 bg-slate-950 p-4 font-mono text-xs text-indigo-300 overflow-x-auto">
 {`import requests
 
-url = "http://localhost:4001/api/v1/external/roadmaps/${roadmapIdInput || 'YOUR_ROADMAP_ID'}"
+url = "${apiBaseUrl}/api/v1/external/roadmaps/${roadmapIdInput || 'YOUR_ROADMAP_ID'}"
 headers = {"x-api-key": "${apiKey}"}
 
 response = requests.get(url, headers=headers)

@@ -1,6 +1,8 @@
 import apiClient from './client';
 
 export const userApi = {
+  getApiKey: () => apiClient.get<{ success: boolean; apiKey: string }>('/user/api-key'),
+  generateApiKey: () => apiClient.post<{ success: boolean; apiKey: string }>('/user/api-key/generate'),
   startRoadmap: (roadmapId: string) => apiClient.post(`/user/roadmaps/${roadmapId}/start`),
   getMyRoadmaps: () => apiClient.get('/user/roadmaps'),
   getProgress: (roadmapId: string) => apiClient.get(`/user/roadmaps/${roadmapId}/progress`),

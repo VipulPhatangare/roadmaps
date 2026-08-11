@@ -136,3 +136,50 @@ export async function getRecommendation(req: AuthRequest, res: Response): Promis
     res.status(500).json({ success: false, message: err.message });
   }
 }
+
+export async function getApiKey(req: AuthRequest, res: Response): Promise<void> {
+  try {
+    const { User } = await import('../models/User.model');
+    const { env } = await import('../config/env');
+    const crypto = await import('crypto');
+
+    const userId = req.user!.id;
+    const user = await User.findById(userId);
+    if (!user) {
+      res.status(404).json({ success: false, message: 'User not found' });
+      return;
+    }
+
+    if (!user.apiKey) {
+      const hex = crypto.randomBytes(16).toString('hex');
+      user.apiKey = `roadmap_key_${hex}`;
+      await user.save();
+    }
+
+    res.json({ success: true, apiKey: user.apiKey });
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+}
+
+export async function generateApiKey(req: AuthRequest, res: Response): Promise<void> {
+  try {
+    const { User } = await import('../models/User.model');
+    const crypto = await import('crypto');
+
+    const userId = req.user!.id;
+    const user = await User.findById(userId);
+    if (!user) {
+      res.status(404).json({ success: false, message: 'User not found' });
+      return;
+    }
+
+    const hex = crypto.randomBytes(16).toString('hex');
+    user.apiKey = `roadmap_key_${hex}`;
+    await user.save();
+
+    res.json({ success: true, apiKey: user.apiKey });
+  } catch (err: any) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+}

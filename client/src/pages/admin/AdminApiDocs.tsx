@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Key, Copy, Check, Terminal, Code2, Globe, Send, Server, Eye, EyeOff, FileText, LayoutDashboard, Database, Cpu, Download, RefreshCw, ShieldCheck, Zap, Sparkles } from 'lucide-react';
 import axios from 'axios';
+import { userApi } from '../../api/user.api';
 
 const SAMPLE_BASIC_OUTPUT = {
   success: true,
@@ -193,6 +194,19 @@ export const AdminApiDocs: React.FC = () => {
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailResult, setDetailResult] = useState<any>(null);
 
+  // Fetch permanent API Key from MongoDB on component mount
+  useEffect(() => {
+    userApi.getApiKey()
+      .then((res) => {
+        if (res.data?.apiKey) {
+          setApiKey(res.data.apiKey);
+        }
+      })
+      .catch(() => {
+        // Fallback if not logged in or error
+      });
+  }, []);
+
   const copyToClipboard = (text: string, label: string = 'Key') => {
     navigator.clipboard.writeText(text);
     setCopiedKey(true);
@@ -223,12 +237,19 @@ export const AdminApiDocs: React.FC = () => {
     }, 2500);
   };
 
-  const handleGenerateNewKey = () => {
-    const randomHex = Array.from({ length: 24 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
-    const newKey = `roadmap_key_${randomHex}`;
-    setApiKey(newKey);
-    setNotification('Generated new demo API Key! (Note: Server environment default active key is default_secret_api_key_2026)');
-    setTimeout(() => setNotification(''), 4000);
+  const handleGenerateNewKey = async () => {
+    try {
+      setNotification('Saving new permanent API Key to database...');
+      const res = await userApi.generateApiKey();
+      if (res.data?.apiKey) {
+        setApiKey(res.data.apiKey);
+        setNotification('✅ Successfully generated and saved permanent API Key to database!');
+        setTimeout(() => setNotification(''), 4000);
+      }
+    } catch (err: any) {
+      setNotification(err.response?.data?.message || 'Failed to generate key in database.');
+      setTimeout(() => setNotification(''), 4000);
+    }
   };
 
   const handleDownloadPostmanCollection = () => {
@@ -447,9 +468,9 @@ export const AdminApiDocs: React.FC = () => {
             <button
               onClick={handleGenerateNewKey}
               className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 px-3.5 py-2.5 text-xs font-semibold text-slate-200 transition"
-              title="Generate new key for testing"
+              title="Generate new permanent key and save to database"
             >
-              <RefreshCw className="h-3.5 w-3.5 text-amber-400" /> Generate Demo Key
+              <RefreshCw className="h-3.5 w-3.5 text-amber-400" /> Generate Permanent Key
             </button>
           </div>
         </div>

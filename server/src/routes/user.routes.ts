@@ -7,12 +7,16 @@ import {
   completeProject,
   switchPath,
   getRecommendation,
+  getApiKey,
+  generateApiKey,
 } from '../controllers/user.controller';
 import { authMiddleware } from '../middleware/auth.middleware';
 
 const router = Router();
 router.use(authMiddleware);
 
+router.get('/api-key', getApiKey);
+router.post('/api-key/generate', generateApiKey);
 router.post('/roadmaps/:id/start', startRoadmap);
 router.get('/roadmaps', getUserRoadmaps);
 router.get('/roadmaps/:id/progress', getProgress);
